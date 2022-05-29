@@ -24,10 +24,12 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <sum-component :num1="2" :num2="3" />
   </div>
 </template>
 
 <script setup>
+import SumComponent from 'src/components/SumComponent.vue'
 import { ref, reactive } from 'vue'
 
 const data = reactive({
