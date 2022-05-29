@@ -24,13 +24,14 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <pie-chart :donut="true" :data="[['Active', todos.length - completed], ['Completed', completed]]"></pie-chart>
     <sum-component :num1="2" :num2="3" />
   </div>
 </template>
 
 <script setup>
 import SumComponent from 'src/components/SumComponent.vue'
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
 const data = reactive({
   newTodo: ''
@@ -49,6 +50,8 @@ const todos = ref([
     isDone: false
   }
 ])
+
+const completed = computed(() => todos.value.filter(t => t.isDone).length)
 
 const add = function () {
   todos.value.unshift({
