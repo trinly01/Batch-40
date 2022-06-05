@@ -23,7 +23,7 @@
           {{ ind }} {{ todo.label }}
         </q-item-section>
         <q-item-section side v-if="data.hovering === ind">
-          <q-btn @click="remove(ind)" round icon="delete" color="red" size="sm" />
+          <q-btn @click="remove(ind, todo)" round icon="delete" color="red" size="sm" />
         </q-item-section>
       </q-item>
     </q-list>
@@ -51,8 +51,8 @@ const data = reactive({
   newTodo: ''
 })
 
-const updateIsDone = (todo) => {
-  $api.patch(`todos/${todo._id}`, {
+const updateIsDone = async (todo) => {
+  await $api.patch(`todos/${todo._id}`, {
     isDone: !todo.isDone
   })
   todo.isDone = !todo.isDone
@@ -78,16 +78,22 @@ const todos = ref([
 
 const completed = computed(() => todos.value.filter(t => t.isDone).length)
 
-const add = function () {
-  todos.value.unshift({
-    _id: Date.now(),
+const add = async function () {
+  const result = await $api.post('todos', {
     label: data.newTodo,
     isDone: false
   })
+  todos.value.unshift(result.data)
+  // todos.value.unshift({
+  //   _id: Date.now(),
+  //   label: data.newTodo,
+  //   isDone: false
+  // })
   data.newTodo = ''
 }
 
-function remove (i) {
+async function remove (i, todo) {
+  await $api.delete(`todos/${todo._id}`)
   todos.value.splice(i, 1)
 }
 
