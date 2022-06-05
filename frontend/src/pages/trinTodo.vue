@@ -14,7 +14,7 @@
     <q-list bordered separator>
       <q-item clickable @mouseleave="data.hovering = -1" @mouseover="data.hovering = ind" v-for="(todo, ind) in todos" :key="todo._id">
         <q-item-section avatar>
-          <q-checkbox v-model="todo.isDone"></q-checkbox>
+          <q-checkbox @click="updateIsDone(todo)" :modelValue="todo.isDone"></q-checkbox>
         </q-item-section>
         <q-item-section :style="{
           'text-decoration': todo.isDone ? 'line-through' : '',
@@ -35,13 +35,28 @@
 
 <script setup>
 import SumComponent from 'src/components/SumComponent.vue'
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, getCurrentInstance, onMounted } from 'vue'
+const app = getCurrentInstance()
+const { $api } = app.appContext.config.globalProperties
+
+onMounted(async () => {
+  // console.log('get data from backend', await $api.get('todos'))
+  const result = await $api.get('todos')
+  todos.value = result.data.data
+})
 
 const data = reactive({
   initialValue: 0,
   hovering: -1,
   newTodo: ''
 })
+
+const updateIsDone = (todo) => {
+  $api.patch(`todos/${todo._id}`, {
+    isDone: !todo.isDone
+  })
+  todo.isDone = !todo.isDone
+}
 
 const checkMessage = (msg) => {
   console.log('pogi', msg)
