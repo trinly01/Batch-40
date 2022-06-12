@@ -37,12 +37,19 @@
 import SumComponent from 'src/components/SumComponent.vue'
 import { ref, reactive, computed, getCurrentInstance, onMounted } from 'vue'
 const app = getCurrentInstance()
-const { $api } = app.appContext.config.globalProperties
+const { $api, $todosService } = app.appContext.config.globalProperties
 
 onMounted(async () => {
   // console.log('get data from backend', await $api.get('todos'))
-  const result = await $api.get('todos')
-  todos.value = result.data.data
+  // const result = await $api.get('todos')
+  // todos.value = result.data.data
+
+  $todosService.on('dataChange', (tasks) => {
+    console.log(tasks)
+    todos.value = [...tasks]
+  })
+
+  $todosService.init()
 })
 
 const data = reactive({
@@ -79,11 +86,15 @@ const todos = ref([
 const completed = computed(() => todos.value.filter(t => t.isDone).length)
 
 const add = async function () {
-  const result = await $api.post('todos', {
+  // await $api.post('todos', {
+  //   label: data.newTodo,
+  //   isDone: false
+  // })
+  await $todosService.create({
     label: data.newTodo,
     isDone: false
   })
-  todos.value.unshift(result.data)
+  // todos.value.unshift(result.data)
   // todos.value.unshift({
   //   _id: Date.now(),
   //   label: data.newTodo,
