@@ -14,7 +14,7 @@ export default boot(async ({ app }) => {
   app.config.globalProperties.$api = axios.create({
     baseURL: 'http://localhost:3030/'
   })
-  app.config.globalProperties.$todosService = wings4.wingsService('todos')
+  app.config.globalProperties.$todosService = wings4.wingsService('gawain')
   app.config.globalProperties.$wings4 = wings4
 
   app.config.globalProperties.$user = reactive({
@@ -26,6 +26,8 @@ export default boot(async ({ app }) => {
     console.log(user)
     app.config.globalProperties.$user.data = user.user
     app.config.globalProperties.$user.jwt = user.accessToken
+    app.config.globalProperties.$todosService.reset()
+    app.config.globalProperties.$todosService.init()
   })
 
   wings4.on('logout', (user) => {

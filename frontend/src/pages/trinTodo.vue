@@ -38,7 +38,7 @@
 import SumComponent from 'src/components/SumComponent.vue'
 import { ref, reactive, computed, getCurrentInstance, onMounted } from 'vue'
 const app = getCurrentInstance()
-const { $api, $todosService, $user, $wings4 } = app.appContext.config.globalProperties
+const { $todosService, $user, $wings4 } = app.appContext.config.globalProperties
 
 onMounted(async () => {
   // console.log('get data from backend', await $api.get('todos'))
@@ -60,10 +60,13 @@ const data = reactive({
 })
 
 const updateIsDone = async (todo) => {
-  await $api.patch(`todos/${todo._id}`, {
+  // await $api.patch(`todos/${todo._id}`, {
+  //   isDone: !todo.isDone
+  // })
+  await $todosService.patch(todo._id, {
     isDone: !todo.isDone
   })
-  todo.isDone = !todo.isDone
+  // todo.isDone = !todo.isDone
 }
 
 const checkMessage = (msg) => {
@@ -105,8 +108,9 @@ const add = async function () {
 }
 
 async function remove (i, todo) {
-  await $api.delete(`todos/${todo._id}`)
-  todos.value.splice(i, 1)
+  // await $api.delete(`todos/${todo._id}`)
+  $todosService.remove(todo._id)
+  // todos.value.splice(i, 1)
 }
 
 const login = async () => {
@@ -120,5 +124,9 @@ const login = async () => {
 const logout = async () => {
   await $wings4.logout()
 }
+
+$wings4.on('logout', (user) => {
+  todos.value = []
+})
 
 </script>
