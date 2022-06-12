@@ -8,7 +8,8 @@
 
       <q-toolbar-title>Batch 40 {{ data.newTodo }}</q-toolbar-title>
 
-      <q-btn flat round dense icon="whatshot" />
+      <q-btn v-if="$user.data" :label="$user.data.displayName" dense icon="logout" @click="logout" />
+      <q-btn v-else flat round dense icon="login" @click="login" />
     </q-toolbar>
     <q-input @keyup.enter="add" rounded standout v-model="data.newTodo" label="Rounded standout" />
     <q-list bordered separator>
@@ -37,7 +38,7 @@
 import SumComponent from 'src/components/SumComponent.vue'
 import { ref, reactive, computed, getCurrentInstance, onMounted } from 'vue'
 const app = getCurrentInstance()
-const { $api, $todosService } = app.appContext.config.globalProperties
+const { $api, $todosService, $user, $wings4 } = app.appContext.config.globalProperties
 
 onMounted(async () => {
   // console.log('get data from backend', await $api.get('todos'))
@@ -106,6 +107,18 @@ const add = async function () {
 async function remove (i, todo) {
   await $api.delete(`todos/${todo._id}`)
   todos.value.splice(i, 1)
+}
+
+const login = async () => {
+  await $wings4.authenticate({
+    email: 'timi.pogi@email.com',
+    password: 'timi.pogi@email.com',
+    strategy: 'local'
+  })
+}
+
+const logout = async () => {
+  await $wings4.logout()
 }
 
 </script>
